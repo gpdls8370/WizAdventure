@@ -29,13 +29,37 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 	void AnimationChange(bool bCombat);
 
+	UFUNCTION(BlueprintImplementableEvent)
+	void ShowCombatUI(bool bCombat);
+
+	UFUNCTION(BlueprintCallable)
+	void Fire();
+
+	UFUNCTION(BlueprintCallable)
+	void OnAttackEnd() { bAttacking = false; };
+
 private:
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(VisibleAnywhere)
 	class USpringArmComponent *SpringArm;
+
+	UPROPERTY(VisibleAnywhere)
+	UStaticMeshComponent *StaffMesh;
+
+	UPROPERTY(VisibleAnywhere)
+	USceneComponent *ProjectileSpawnPoint;
+
+	UPROPERTY(EditAnywhere, Category = "Combat")
+	TSubclassOf<class AProjectile> ProjectileClass;
+
+	UPROPERTY(EditAnywhere, Category = "Combat")
+	UAnimMontage *AttackMontage;
 
 	void MoveForward(float Value);
 	void MoveRight(float Value);
 	void CombatToggle();
+
+	void Attack();
+	bool bAttacking = false;
 
 	void SetMovementInput(bool bFixedFront);
 	void SetCameraView(bool bFixedFront);
