@@ -1,84 +1,117 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #include "Wizard.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include <GameFramework/SpringArmComponent.h>
 
 // Sets default values
 AWizard::AWizard()
 {
- 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	SpringArm = CreateDefaultSubobject<USpringArmComponent>("Spring Arm");
+	SpringArm->SetupAttachment(RootComponent);
 
-	GetCharacterMovement()->MaxWalkSpeed = Speed;
+	PrimaryActorTick.bCanEverTick = true;
 }
 
 // Called when the game starts or when spawned
 void AWizard::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	SetMovementInput(bCombatMode);
 }
 
 // Called every frame
 void AWizard::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
 // Called to bind functionality to input
-void AWizard::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+void AWizard::SetupPlayerInputComponent(UInputComponent *PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
 	PlayerInputComponent->BindAxis("MoveForward", this, &AWizard::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &AWizard::MoveRight);
-	PlayerInputComponent->BindAxis("Lookup", this, &AWizard::Lookup);
-	PlayerInputComponent->BindAxis("Turn", this, &AWizard::Turn);
+	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
+	PlayerInputComponent->BindAxis("LookRight", this, &APawn::AddControllerYawInput);
+	PlayerInputComponent->BindAction("Jump", EInputEvent::IE_Pressed, this, &ACharacter::Jump);
+	PlayerInputComponent->BindAction("CombatToggle", EInputEvent::IE_Pressed, this, &AWizard::CombatToggle);
 }
 
-void AWizard::MoveForward(float Value)
+void AWizard::MoveForward(float AxisValue)
 {
-	if ((Controller != nullptr) && (Value != 0.0f))
+	if ((Controller != nullptr) && (AxisValue != 0.0f))
 	{
-		// ÇöÀç È­¸é ÁÂ¿ì(Yaw) È¸Àü ¾Ë¾Æ³»±â
+		// ë§ˆìš°ìŠ¤ íšŒì „ ê³ ë ¤ (Yaw íšŒì „ë§Œ ë°˜ì˜í•¨)
 		const FRotator Rotation = Controller->GetControlRotation();
 		const FRotator YawRotation(0, Rotation.Yaw, 0);
 
-		// FRotationMatrix·Î ¹Ù²ã¼­(°è»ê ¼Óµµ Çâ»ó) Àü¹æ º¤ÅÍ Direction ¾Ë¾Æ³»±â
+		// í™”ë©´ íšŒì „ì— ëŒ€í•´ ì •ë©´ ë²¡í„°(xì¶•) ì¶”ì¶œ
 		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
-
-		// ÀÌµ¿ ½ÃÅ°±â
-		AddMovementInput(Direction, Value);
+		AddMovementInput(Direction, AxisValue);
 	}
-}
-
-void AWizard::MoveRight(float Value)
-{
-	if ((Controller != nullptr) && (Value != 0.0f))
-	{
-		// ÇöÀç È­¸é ÁÂ¿ì(Yaw) È¸Àü ¾Ë¾Æ³»±â
-		const FRotator Rotation = Controller->GetControlRotation();
-		const FRotator YawRotation(0, Rotation.Yaw, 0);
-
-		// Right º¤ÅÍ ¾Ë¾Æ³»±â
-		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
-		
-		// ÀÌµ¿ ½ÃÅ°±â
-		AddMovementInput(Direction, Value);
-	}
-}
-
-void AWizard::Lookup(float Value)
-{
-	// Pitch ¹Ù²ãÁÖ±â
-	AddControllerPitchInput(Value * Sensitivity * GetWorld()->GetDeltaSeconds());
 	
 }
 
-void AWizard::Turn(float Value)
+void AWizard::MoveRight(float AxisValue)
 {
-	// Yaw ¹Ù²ãÁÖ±â
-	AddControllerYawInput(Value * Sensitivity * GetWorld()->GetDeltaSeconds());
+	if ((Controller != nullptr) && (AxisValue != 0.0f))
+	{
+		const FRotator Rotation = Controller->GetControlRotation();
+		const FRotator YawRotation(0, Rotation.Yaw, 0);
+
+
+		// í™”ë©´ íšŒì „ì— ëŒ€í•´ ì˜¤ë¥¸ìª½ ë²¡í„°(yì¶•) ì¶”ì¶œ
+		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+		AddMovementInput(Direction, AxisValue);
+	}
 }
+
+void AWizard::CombatToggle()
+{
+	bCombatMode = !bCombatMode;
+	SetMovementInput(bCombatMode);
+	GetCharacterMovement()->MaxWalkSpeed = bCombatMode ? CombatSpeed : NormalSpeed;
+	AnimationChange(bCombatMode);
+	SetCameraView(bCombatMode);
+}
+
+void AWizard::SetMovementInput(bool bFixedFront)
+{
+	bUseControllerRotationYaw = bFixedFront;
+	GetCharacterMovement()->bOrientRotationToMovement = !bFixedFront;
+}
+
+void AWizard::SetCameraView(bool bFixedFront)
+{
+	if (bFixedFront)
+	{
+		SpringArm->TargetArmLength = 300.f;
+		SpringArm->SetRelativeLocation(FVector(20 , 40 , 55));
+		SpringArm->SocketOffset = FVector(0 , 30 , 0);
+		//Cast<APlayerController>(Controller)->bShowMouseCursor = true;
+	}
+	else
+	{
+		SpringArm->TargetArmLength = 500.f;
+		SpringArm->SetRelativeLocation(FVector::ZeroVector);
+		SpringArm->SocketOffset = FVector::ZeroVector;
+		//Cast<APlayerController>(Controller)->bShowMouseCursor = false;
+	}
+}
+
+// ì½˜ì†”ì¼ ê²½ìš°ì— ì‚¬ìš©
+// void AWizard::Lookup(float Value)
+// {
+// 	// Pitch ë°”ê¿”ì£¼ê¸°
+// 	AddControllerPitchInput(Value * Sensitivity * GetWorld()->GetDeltaSeconds());
+
+// }
+
+// void AWizard::Turn(float Value)
+// {
+// 	// Yaw ë°”ê¿”ì£¼ê¸°
+// 	AddControllerYawInput(Value * Sensitivity * GetWorld()->GetDeltaSeconds());
+// }

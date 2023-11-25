@@ -19,23 +19,28 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-public:	
+public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	virtual void SetupPlayerInputComponent(class UInputComponent *PlayerInputComponent) override;
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void AnimationChange(bool bCombat);
 
 private:
+	UPROPERTY(EditAnywhere)
+	class USpringArmComponent *SpringArm;
 
 	void MoveForward(float Value);
 	void MoveRight(float Value);
-	void Lookup(float Value);
-	void Turn(float Value);
+	void CombatToggle();
 
-	UPROPERTY(EditAnywhere, Category = "Movement")
-	float Speed = 300.f;
+	void SetMovementInput(bool bFixedFront);
+	void SetCameraView(bool bFixedFront);
 
-	UPROPERTY(EditAnywhere, Category = "Movement")
-	float Sensitivity = 30.f;
+	bool bCombatMode = false;
+	float NormalSpeed = 400.f;
+	float CombatSpeed = 200.f;
 };
