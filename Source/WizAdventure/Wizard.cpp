@@ -92,10 +92,12 @@ void AWizard::Fire()
 	Controller->GetPlayerViewPoint(Location, Rotator);
 
 	AProjectile *Projectile = GetWorld()->SpawnActor<AProjectile>(
-	ProjectileClass,
-	ProjectileSpawnPoint->GetComponentLocation(),
-	Rotator
+		ProjectileClass,
+		ProjectileSpawnPoint->GetComponentLocation(),
+		Rotator
 	);
+
+	Projectile->SetOwner(this);
 }
 
 void AWizard::CombatToggle()
