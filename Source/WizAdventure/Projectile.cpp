@@ -3,14 +3,15 @@
 
 #include "Projectile.h"
 #include <GameFramework/ProjectileMovementComponent.h>
+#include <Components/SphereComponent.h>
 
 // Sets default values
 AProjectile::AProjectile()
 {
 	PrimaryActorTick.bCanEverTick = false;
 
-	ProjectileMesh = CreateDefaultSubobject<UStaticMeshComponent>("Projectile Mesh");
-	RootComponent = ProjectileMesh;
+	SphereComponent = CreateDefaultSubobject<USphereComponent>("Sphere");
+	RootComponent = SphereComponent;
 
 	ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>("Projectile Movement");
 	ProjectileMovement->MaxSpeed = Speed;
@@ -22,10 +23,10 @@ void AProjectile::BeginPlay()
 {
 	Super::BeginPlay();
 
-	ProjectileMesh->OnComponentHit.AddDynamic(this, &AProjectile::OnHit);
+	SphereComponent ->OnComponentHit.AddDynamic(this, &AProjectile::OnHit);
 }
 
 void AProjectile::OnHit(UPrimitiveComponent *HitComp, AActor *OtherActor, UPrimitiveComponent *OtherComp, FVector NormalImpulse, const FHitResult &Hit)
 {
-	Destroy();
+	ProjectileHit();
 }

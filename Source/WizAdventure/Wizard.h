@@ -65,6 +65,6 @@ private:
 	void SetCameraView(bool bFixedFront);
 
 	bool bCombatMode = false;
-	float NormalSpeed = 400.f;
+	float NormalSpeed = 500.f;
 	float CombatSpeed = 200.f;
 };

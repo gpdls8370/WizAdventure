@@ -15,13 +15,19 @@ public:
 	// Sets default values for this actor's properties
 	AProjectile();
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UParticleSystem *HitParticle;
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void ProjectileHit();
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 private:
 	UPROPERTY(VisibleAnywhere)
-	UStaticMeshComponent *ProjectileMesh;
+	class USphereComponent *SphereComponent;
 
 	UPROPERTY(VisibleAnywhere)
 	class UProjectileMovementComponent *ProjectileMovement;
