@@ -29,9 +29,6 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 	void AnimationChange(bool bCombat);
 
-	UFUNCTION(BlueprintImplementableEvent)
-	void ShowCombatUI(bool bCombat);
-
 	UFUNCTION(BlueprintCallable)
 	void Fire();
 
@@ -62,9 +59,13 @@ private:
 	bool bAttacking = false;
 
 	void SetMovementInput(bool bFixedFront);
-	void SetCameraView(bool bFixedFront);
+	void SetCameraView(float DeltaTime);
 
 	bool bCombatMode = false;
 	float NormalSpeed = 500.f;
 	float CombatSpeed = 200.f;
+
+	bool bCameraMoving = false;
+	float MoveTime = 0.f;
+	float MoveDuration = 0.2f;
 };

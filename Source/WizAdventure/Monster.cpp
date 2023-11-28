@@ -2,8 +2,6 @@
 
 
 #include "Monster.h"
-#include "HealthComponent.h"
-#include "Components/WidgetComponent.h"
 
 // Sets default values
 AMonster::AMonster()

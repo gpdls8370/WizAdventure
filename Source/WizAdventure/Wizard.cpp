@@ -33,6 +33,8 @@ void AWizard::BeginPlay()
 void AWizard::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	SetCameraView(DeltaTime);
 }
 
 // Called to bind functionality to input
@@ -106,11 +108,7 @@ void AWizard::CombatToggle()
 	SetMovementInput(bCombatMode);
 	GetCharacterMovement()->MaxWalkSpeed = bCombatMode ? CombatSpeed : NormalSpeed;
 	AnimationChange(bCombatMode);
-	SetCameraView(bCombatMode);
-	if (bCombatMode)
-	{
-		ShowCombatUI(bCombatMode);
-	}
+	bCameraMoving = true;
 }
 
 void AWizard::SetMovementInput(bool bFixedFront)
@@ -119,21 +117,33 @@ void AWizard::SetMovementInput(bool bFixedFront)
 	GetCharacterMovement()->bOrientRotationToMovement = !bFixedFront;
 }
 
-void AWizard::SetCameraView(bool bFixedFront)
+void AWizard::SetCameraView(float DeltaTime)
 {
-	if (bFixedFront)
+	if (!bCameraMoving) return;
+
+	if (MoveTime > MoveDuration)
 	{
-		SpringArm->TargetArmLength = 300.f;
-		SpringArm->SetRelativeLocation(FVector(0 , 40 , 75));
-		SpringArm->SocketOffset = FVector(0 , 30 , 0);
-		StaffMesh->SetRelativeRotation(FRotator(1.5, 4, -9));
+		bCameraMoving = false;
+		MoveTime = 0;
+		return;
+	}
+
+	MoveTime += DeltaTime;
+	float alpha = MoveTime / MoveDuration;
+
+	if (bCombatMode)
+	{
+		SpringArm->TargetArmLength = FMath::Lerp(500.f, 300.f, alpha);
+		SpringArm->SetRelativeLocation(FMath::Lerp(FVector(0, 0, 75), FVector(0, 40, 95), alpha));
+		SpringArm->SocketOffset = FMath::Lerp(FVector::ZeroVector, FVector(0, 30, 0), alpha);
+		StaffMesh->SetRelativeRotation(FMath::Lerp(FRotator::ZeroRotator, FRotator(1.5, 4, -9), alpha));
 	}
 	else
 	{
-		SpringArm->TargetArmLength = 500.f;
-		SpringArm->SetRelativeLocation(FVector(0, 0, 75));
-		SpringArm->SocketOffset = FVector::ZeroVector;
-		StaffMesh->SetRelativeRotation(FRotator::ZeroRotator);
+		SpringArm->TargetArmLength = FMath::Lerp(300.f, 500.f, alpha);
+		SpringArm->SetRelativeLocation(FMath::Lerp(FVector(0, 40, 95), FVector(0, 0, 75), alpha));
+		SpringArm->SocketOffset = FMath::Lerp(FVector(0, 30, 0), FVector::ZeroVector, alpha);
+		StaffMesh->SetRelativeRotation(FMath::Lerp(FRotator(1.5, 4, -9), FRotator::ZeroRotator, alpha));
 	}
 }
 

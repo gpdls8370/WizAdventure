@@ -16,4 +16,19 @@ class WIZADVENTURE_API AWizAdventureGameMode : public AGameModeBase
 	
 public:
 	void ActorDied(AActor* Actor);
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void UpdateMonster(int32 NowMonsterCount);
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void GameClear();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void GameOver();
+
+protected:
+	virtual void BeginPlay() override;
+
+private:
+	int32 MonsterCount;
 };
