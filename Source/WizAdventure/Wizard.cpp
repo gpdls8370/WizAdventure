@@ -99,7 +99,15 @@ void AWizard::Fire()
 		Rotator
 	);
 
+	Projectile->SetDamage(FireDamage);
 	Projectile->SetOwner(this);
+}
+
+void AWizard::HandleHit()
+{
+	UGameplayStatics::SpawnEmitterAtLocation(this, HitParticle, GetActorLocation(), FRotator::ZeroRotator, FVector(0.5f));
+	UGameplayStatics::PlaySoundAtLocation(this, HitSound, GetActorLocation());
+	GetWorld()->GetFirstPlayerController()->ClientStartCameraShake(HitCameraShake);
 }
 
 void AWizard::CombatToggle()

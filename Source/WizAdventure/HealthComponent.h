@@ -18,7 +18,7 @@ public:
 	UHealthComponent();
 
 	UPROPERTY(BlueprintAssignable)
-	FDelegate HitDelegate;
+	FDelegate HitDelegate;	// Hit시 이벤트, 블루프린트로 구현
 
 	UFUNCTION(BlueprintCallable)
 	float GetHealthPercent() const { return Health / MaxHealth; };

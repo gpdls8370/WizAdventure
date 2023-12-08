@@ -27,12 +27,26 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	UFUNCTION(BlueprintImplementableEvent)
-	void OnDead();
+	void DelayDestroy();
 
 	UFUNCTION(BlueprintCallable)
 	void HandleHit();
 
 	void HandleDestruction();
+
+	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
+	void HandleAttack();
+
+	void Attack();
+
+	UPROPERTY(EditAnywhere, Category = "Combat")
+	float MoveSpeed = 400.f;
+
+	UPROPERTY(EditAnywhere, Category = "Combat")
+	float DetectRange = 1000.f;
+
+	UPROPERTY(EditAnywhere, Category = "Combat")
+	float AttackCooltime = 3.f;
 
 private:
 	UPROPERTY(EditAnywhere, Category = "Combat")
@@ -40,4 +54,7 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	UAnimMontage *AttackMontage;
+
+	UPROPERTY(EditAnywhere, Category = "Combat")
+	USoundBase *HitSound;
 };

@@ -2,6 +2,8 @@
 
 
 #include "Monster.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include <Kismet/GameplayStatics.h>
 
 // Sets default values
 AMonster::AMonster()
@@ -14,6 +16,7 @@ AMonster::AMonster()
 void AMonster::BeginPlay()
 {
 	Super::BeginPlay();
+	GetCharacterMovement()->MaxWalkSpeed = MoveSpeed;
 }
 
 // Called every frame
@@ -26,14 +29,20 @@ void AMonster::Tick(float DeltaTime)
 void AMonster::HandleHit()
 {
 	PlayAnimMontage(HitMontage);
-	// 사운드
+	UGameplayStatics::PlaySoundAtLocation(this, HitSound, GetActorLocation());
 }
 
 void AMonster::HandleDestruction()
 {
-	// 애니메이션 + Destroy
-	OnDead();
-	// 사운드
+	PlayAnimMontage(DieMontage);
+	DelayDestroy();
+	UGameplayStatics::PlaySoundAtLocation(this, HitSound, GetActorLocation());
 	// 점수는 게임모드에서
-	
 }
+
+void AMonster::Attack()
+{
+	PlayAnimMontage(AttackMontage);
+	// 애니메이션 공격 시점에서 OnAttack() 실행
+}
+

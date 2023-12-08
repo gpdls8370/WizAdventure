@@ -21,6 +21,8 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 	void ProjectileHit();
 
+	void SetDamage(float Value) { Damage = Value; }
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

@@ -35,6 +35,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void OnAttackEnd() { bAttacking = false; };
 
+	UFUNCTION(BlueprintCallable)
+	void HandleHit();
+
 private:
 	UPROPERTY(VisibleAnywhere)
 	class USpringArmComponent *SpringArm;
@@ -51,6 +54,18 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	UAnimMontage *AttackMontage;
 
+	UPROPERTY(EditAnywhere, Category = "Combat")
+	float FireDamage;
+
+	UPROPERTY(EditAnywhere, Category = "Combat")
+	UParticleSystem *HitParticle;
+
+	UPROPERTY(EditAnywhere, Category = "Combat")
+	USoundBase *HitSound;
+
+	UPROPERTY(EditAnywhere, Category = "Combat")
+	TSubclassOf<UCameraShakeBase> HitCameraShake;
+
 	void MoveForward(float Value);
 	void MoveRight(float Value);
 	void CombatToggle();
@@ -62,7 +77,7 @@ private:
 	void SetCameraView(float DeltaTime);
 
 	bool bCombatMode = false;
-	float NormalSpeed = 500.f;
+	float NormalSpeed = 600.f;
 	float CombatSpeed = 200.f;
 
 	bool bCameraMoving = false;
