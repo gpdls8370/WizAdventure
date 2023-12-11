@@ -8,9 +8,10 @@
 
 void AWizAdventureGameMode::ActorDied(AActor *Actor)
 {
-	if (AWizard *Wizard = Cast<AWizard>(Actor))
+	if (Actor == Wizard)
 	{
-		// Á¾·á
+		Wizard->HandleDestruction();
+		SetPlayerInput(false);
 		GameOver();
 	}
 	else if (AMonster *Monster = Cast<AMonster>(Actor))
@@ -21,6 +22,7 @@ void AWizAdventureGameMode::ActorDied(AActor *Actor)
 
 		if (MonsterCount == 0)
 		{
+			SetPlayerInput(false);
 			GameClear();
 		}
 	}
@@ -34,5 +36,28 @@ void AWizAdventureGameMode::BeginPlay()
 	UGameplayStatics::GetAllActorsOfClass(this, AMonster::StaticClass(), Array);
 	MonsterCount = Array.Num();
 
+	Wizard = Cast<AWizard>(UGameplayStatics::GetPlayerCharacter(this, 0));
+
 	UpdateMonster(MonsterCount);
+}
+
+void AWizAdventureGameMode::SetPlayerInput(bool Enable)
+{
+	APlayerController *PlayerController = UGameplayStatics::GetPlayerController(this, 0);
+
+	if (PlayerController == nullptr)
+	{
+		return;
+	}
+
+	if (Enable)
+	{
+		Wizard->EnableInput(PlayerController);
+		PlayerController->bShowMouseCursor = false;
+	}
+	else
+	{
+		Wizard->DisableInput(PlayerController);
+		PlayerController->bShowMouseCursor = true;
+	}
 }

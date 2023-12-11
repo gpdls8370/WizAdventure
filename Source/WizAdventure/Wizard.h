@@ -35,8 +35,12 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void OnAttackEnd() { bAttacking = false; };
 
+	void HandleDestruction();
+
 	UFUNCTION(BlueprintCallable)
 	void HandleHit();
+
+	float GetHealth();
 
 private:
 	UPROPERTY(VisibleAnywhere)
@@ -53,6 +57,9 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	UAnimMontage *AttackMontage;
+
+	UPROPERTY(EditAnywhere, Category = "Combat")
+	UAnimMontage *DieMontage;
 
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	float FireDamage;

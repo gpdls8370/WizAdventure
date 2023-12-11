@@ -5,6 +5,7 @@
 #include <GameFramework/SpringArmComponent.h>
 #include "Projectile.h"
 #include "Kismet/GameplayStatics.h"
+#include "HealthComponent.h"
 
 // Sets default values
 AWizard::AWizard()
@@ -110,6 +111,11 @@ void AWizard::HandleHit()
 	GetWorld()->GetFirstPlayerController()->ClientStartCameraShake(HitCameraShake);
 }
 
+void AWizard::HandleDestruction()
+{
+	PlayAnimMontage(DieMontage);
+}
+
 void AWizard::CombatToggle()
 {
 	bCombatMode = !bCombatMode;
@@ -153,6 +159,16 @@ void AWizard::SetCameraView(float DeltaTime)
 		SpringArm->SocketOffset = FMath::Lerp(FVector(0, 30, 0), FVector::ZeroVector, alpha);
 		StaffMesh->SetRelativeRotation(FMath::Lerp(FRotator(1.5, 4, -9), FRotator::ZeroRotator, alpha));
 	}
+}
+
+float AWizard::GetHealth()
+{
+	UHealthComponent *HealthComp = GetComponentByClass<UHealthComponent>();
+	if (HealthComp)
+	{
+		return HealthComp->GetHealth();
+	}
+	return 0;
 }
 
 // 콘솔일 경우에 사용

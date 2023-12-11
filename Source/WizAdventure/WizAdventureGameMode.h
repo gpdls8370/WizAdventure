@@ -31,4 +31,8 @@ protected:
 
 private:
 	int32 MonsterCount;
+
+	void SetPlayerInput(bool Enable);
+
+	class AWizard *Wizard;
 };
