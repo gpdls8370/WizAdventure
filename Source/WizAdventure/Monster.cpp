@@ -17,6 +17,7 @@ void AMonster::BeginPlay()
 {
 	Super::BeginPlay();
 	GetCharacterMovement()->MaxWalkSpeed = MoveSpeed;
+	OnBeginPlay();
 }
 
 // Called every frame

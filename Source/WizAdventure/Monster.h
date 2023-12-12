@@ -1,4 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -25,6 +24,10 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+	// BPMonster의 자식 블루프린트가 사용할 BeginPlay() 
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnBeginPlay();
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void DelayDestroy();
